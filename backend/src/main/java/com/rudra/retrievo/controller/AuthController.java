@@ -2,6 +2,7 @@ package com.rudra.retrievo.controller;
 
 import com.rudra.retrievo.dto.UserLoginDto;
 import com.rudra.retrievo.dto.UserRegistrationDto;
+import com.rudra.retrievo.dto.UserResponseDto;
 import com.rudra.retrievo.entity.User;
 import com.rudra.retrievo.service.UserService;
 import jakarta.validation.Valid;
@@ -25,9 +26,10 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@Valid @RequestBody UserRegistrationDto registrationDto) {
+    public ResponseEntity<UserResponseDto> registerUser(@Valid @RequestBody UserRegistrationDto registrationDto) {
         User registeredUser = userService.registerNewUser(registrationDto);
-        return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        UserResponseDto responseDto = UserResponseDto.fromEntity(registeredUser);
+        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
