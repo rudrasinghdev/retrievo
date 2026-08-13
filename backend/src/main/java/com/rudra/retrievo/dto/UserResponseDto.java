@@ -18,8 +18,8 @@ public class UserResponseDto {
     private String email;
     private Role role;
     private boolean isActive;
-    private LocalDateTime created_at;
-    private LocalDateTime updated_at;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static UserResponseDto fromEntity(User user) {
         return UserResponseDto.builder()
@@ -28,8 +28,8 @@ public class UserResponseDto {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .isActive(user.isActive())
-                .created_at(user.getCreatedAt())
-                .updated_at(user.getUpdatedAt())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
