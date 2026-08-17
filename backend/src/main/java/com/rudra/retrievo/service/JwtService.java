@@ -52,7 +52,7 @@ public class JwtService {
                 .getPayload();
     }
 
-    public boolean isTokenValid(String token, User user){
+    public boolean isTokenValid(String token, User user) {
         return user.getEmail().equals(extractEmail(token)) && !isTokenExpired(token);
     }
 

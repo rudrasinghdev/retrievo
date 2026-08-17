@@ -6,7 +6,6 @@ import com.rudra.retrievo.entity.User;
 import com.rudra.retrievo.exception.EmailAlreadyExistsException;
 import com.rudra.retrievo.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -24,7 +23,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
 
     public User registerNewUser(UserRegistrationDto registrationDto) {
-        if(userRepository.findByEmail(registrationDto.getEmail()).isPresent()){
+        if (userRepository.findByEmail(registrationDto.getEmail()).isPresent()) {
             throw new EmailAlreadyExistsException("Email address is already in use");
         }
 

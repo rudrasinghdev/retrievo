@@ -5,7 +5,6 @@ import com.rudra.retrievo.enums.ItemStatus;
 import com.rudra.retrievo.enums.ItemType;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
 
 import java.time.LocalDateTime;
 
