@@ -66,12 +66,12 @@ public class ClaimService {
     @Transactional(readOnly = true)
     public Page<ClaimResponseDto> getClaimsByItemId(Long itemId, User currentUser, Pageable pageable) {
         Item item = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id : " + itemId));
+                .orElseThrow(() -> new ResourceNotFoundException("Item not found with id: " + itemId));
 
         boolean isPoster = item.getPostedBy().getId().equals(currentUser.getId());
-        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
+        boolean isAdmin = currentUser.getRole() == Role.ADMIN;
         if (!isPoster && !isAdmin) {
-            throw new UnauthorizedAccessException("You do not have permissions to view claims on this item");
+            throw new UnauthorizedAccessException("You do not have permission to view claims for this item");
         }
 
         return claimRepository.findByItemId(itemId, pageable)

@@ -50,7 +50,7 @@ public class ClaimController {
         Page<ClaimResponseDto> claims = claimService.getMyClaims(currentUser, pageable);
         return ResponseEntity.ok(claims);
     }
-    
+
     @PatchMapping("/api/claims/{claimId}/status")
     public ResponseEntity<ClaimResponseDto> updateClaimStatus(
             @PathVariable Long claimId,

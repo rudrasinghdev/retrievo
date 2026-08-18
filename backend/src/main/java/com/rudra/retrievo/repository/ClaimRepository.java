@@ -21,7 +21,5 @@ public interface ClaimRepository extends JpaRepository<Claim, Long> {
 
     boolean existsByItemIdAndClaimantIdAndStatus(Long itemId, Long claimantId, ClaimStatus status);
 
-    List<Claim> findByItemIdAndStatus(Long ItemId, ClaimStatus status);
-
-    Long id(Long id);
+    List<Claim> findByItemIdAndStatus(Long itemId, ClaimStatus status);
 }
