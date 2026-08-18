@@ -17,6 +17,12 @@
   <img src="https://img.shields.io/badge/JWT-Stateless_Auth-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" alt="JWT" />
 </p>
 
+<p align="center">
+  <a href="https://retrievo-app.vercel.app" target="_blank">
+    <img src="https://img.shields.io/badge/🌐_Live_Deployment-retrievo--app.vercel.app-00DC82?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Deployment" />
+  </a>
+</p>
+
 ---
 
 ## 🏛️ System Architecture
