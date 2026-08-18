@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axiosClient from '../api/axiosClient';
 import { API_ENDPOINTS } from '../api/apiEndpoints';
 import { X, ShieldAlert, CheckCircle, AlertCircle, Image, FileText } from 'lucide-react';
+import ImageUploadBox from './ImageUploadBox';
 
 const ClaimModal = ({ itemId, itemTitle, onClose, onSuccess }) => {
   const [proofDescription, setProofDescription] = useState('');
@@ -110,16 +111,12 @@ const ClaimModal = ({ itemId, itemTitle, onClose, onSuccess }) => {
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">Proof Image URL (Optional)</label>
-            <input
-              type="url"
-              className="form-input"
-              placeholder="https://example.com/receipt-photo.jpg"
-              value={proofImageUrl}
-              onChange={(e) => setProofImageUrl(e.target.value)}
-            />
-          </div>
+          <ImageUploadBox
+            imageUrl={proofImageUrl}
+            onImageUploaded={(url) => setProofImageUrl(url)}
+            onImageRemoved={() => setProofImageUrl('')}
+            label="Proof Photo / Receipt"
+          />
 
           <div style={{ display: 'flex', gap: '0.75rem', marginTop: '1.5rem' }}>
             <button

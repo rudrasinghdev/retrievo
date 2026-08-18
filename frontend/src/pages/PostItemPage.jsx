@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
 import { API_ENDPOINTS, CATEGORIES } from '../api/apiEndpoints';
 import { PlusCircle, ArrowLeft, AlertCircle, Sparkles, MapPin, Calendar, Tag, Image, FileText } from 'lucide-react';
+import ImageUploadBox from '../components/ImageUploadBox';
 
 const PostItemPage = () => {
   const navigate = useNavigate();
@@ -218,17 +219,13 @@ const PostItemPage = () => {
               />
             </div>
 
-            {/* Optional Image URL */}
-            <div className="form-group">
-              <label className="form-label">Image URL (Optional)</label>
-              <input
-                type="url"
-                className="form-input"
-                placeholder="https://images.unsplash.com/... or cloud image link"
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-              />
-            </div>
+            {/* Image Upload Box */}
+            <ImageUploadBox
+              imageUrl={imageUrl}
+              onImageUploaded={(url) => setImageUrl(url)}
+              onImageRemoved={() => setImageUrl('')}
+              label="Item Photo"
+            />
 
             <button
               type="submit"
