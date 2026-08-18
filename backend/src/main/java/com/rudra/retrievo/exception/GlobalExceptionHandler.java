@@ -35,6 +35,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("Invalid email or password", HttpStatus.UNAUTHORIZED);
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<Map<String, Object>> handleBadRequest(BadRequestException ex) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<Map<String, Object>> handleDisabledAccount(DisabledException ex) {
         return buildErrorResponse("This account has been deactivated", HttpStatus.UNAUTHORIZED);
