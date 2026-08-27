@@ -1,5 +1,6 @@
 package com.rudra.retrievo.service;
 
+import com.rudra.retrievo.dto.ItemMatchResponseDto;
 import com.rudra.retrievo.dto.ItemRequestDto;
 import com.rudra.retrievo.dto.ItemResponseDto;
 import com.rudra.retrievo.entity.Item;
@@ -27,6 +28,7 @@ import java.util.List;
 public class ItemService {
 
     private final ItemRepository itemRepository;
+    private final VectorMatchingService vectorMatchingService;
 
 
     @Transactional
@@ -43,6 +45,7 @@ public class ItemService {
                 .build();
 
         Item savedItem = itemRepository.save(item);
+        vectorMatchingService.indexItem(savedItem);
         return ItemResponseDto.fromEntity(savedItem);
     }
 
@@ -109,6 +112,7 @@ public class ItemService {
         item.setDateReported(requestDto.getDateReported());
 
         Item updatedItem = itemRepository.save(item);
+        vectorMatchingService.indexItem(updatedItem);
         return ItemResponseDto.fromEntity(updatedItem);
     }
 
@@ -119,6 +123,7 @@ public class ItemService {
 
         checkOwnership(item, currentUser);
 
+        vectorMatchingService.deleteItemIndex(id);
         itemRepository.delete(item);
     }
 
@@ -128,5 +133,13 @@ public class ItemService {
         if (!isOwner && !isAdmin) {
             throw new UnauthorizedAccessException("You do not have permission to modify this item");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ItemMatchResponseDto> matchItems(String query, ItemType type) {
+        // If user is searching what they LOST, search among FOUND items (and vice versa)
+        ItemType targetType = (type == ItemType.LOST) ? ItemType.FOUND :
+                (type == ItemType.FOUND ? ItemType.LOST : null);
+        return vectorMatchingService.findMatches(query, targetType, 0.65);
     }
 }

@@ -27,38 +27,50 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('retrievo_token');
-    const savedUser = localStorage.getItem('retrievo_user');
+    const initAuth = async () => {
+      const savedToken = localStorage.getItem('retrievo_token');
+      const savedUser = localStorage.getItem('retrievo_user');
 
-    if (savedToken) {
-      setToken(savedToken);
-      if (savedUser) {
-        try {
-          setUser(JSON.parse(savedUser));
-        } catch (e) {
-          const decoded = decodeJwtPayload(savedToken);
-          if (decoded) setUser({ email: decoded.sub, role: decoded.role || 'USER' });
+      if (savedToken) {
+        setToken(savedToken);
+        if (savedUser) {
+          try {
+            setUser(JSON.parse(savedUser));
+          } catch (e) {
+            const decoded = decodeJwtPayload(savedToken);
+            if (decoded) setUser({ email: decoded.sub, fullName: decoded.fullName || decoded.sub.split('@')[0], role: decoded.role || 'USER' });
+          }
         }
-      } else {
-        const decoded = decodeJwtPayload(savedToken);
-        if (decoded) setUser({ email: decoded.sub, role: decoded.role || 'USER' });
+
+        // Fetch fresh profile from database to ensure exact real name
+        try {
+          const res = await axiosClient.get(API_ENDPOINTS.ME);
+          if (res.data) {
+            setUser(res.data);
+            localStorage.setItem('retrievo_user', JSON.stringify(res.data));
+          }
+        } catch (err) {
+          // Token may be invalid/expired
+          console.warn('Could not sync user profile:', err);
+        }
       }
-    }
-    setLoading(false);
+      setLoading(false);
+    };
+
+    initAuth();
   }, []);
 
   const login = async (email, password) => {
     const response = await axiosClient.post(API_ENDPOINTS.LOGIN, { email, password });
-    const { token: receivedToken } = response.data;
+    const { token: receivedToken, fullName, role } = response.data;
 
     localStorage.setItem('retrievo_token', receivedToken);
     setToken(receivedToken);
 
-    const decoded = decodeJwtPayload(receivedToken);
     const userData = {
-      email: decoded?.sub || email,
-      fullName: email.split('@')[0],
-      role: decoded?.role || 'USER',
+      email: response.data.email || email,
+      fullName: fullName || email.split('@')[0],
+      role: role || 'USER',
     };
 
     localStorage.setItem('retrievo_user', JSON.stringify(userData));
@@ -67,9 +79,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (registrationData) => {
-    const response = await axiosClient.post(API_ENDPOINTS.REGISTER, registrationData);
-    // After registration, log the user in automatically
-    return await login(registrationData.email, registrationData.password);
+    await axiosClient.post(API_ENDPOINTS.REGISTER, registrationData);
+    const userData = await login(registrationData.email, registrationData.password);
+    if (registrationData.fullName) {
+      userData.fullName = registrationData.fullName;
+      localStorage.setItem('retrievo_user', JSON.stringify(userData));
+      setUser({ ...userData });
+    }
+    return userData;
+  };
+
+  const updateProfile = async (profileData) => {
+    const response = await axiosClient.put(API_ENDPOINTS.UPDATE_PROFILE, profileData);
+    const updatedUser = response.data;
+    localStorage.setItem('retrievo_user', JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    return updatedUser;
   };
 
   const logout = () => {
@@ -86,6 +111,7 @@ export const AuthProvider = ({ children }) => {
     loading,
     login,
     register,
+    updateProfile,
     logout,
   };
 

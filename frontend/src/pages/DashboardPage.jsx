@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
 import { API_ENDPOINTS } from '../api/apiEndpoints';
 import { useAuth } from '../context/AuthContext';
+import EditProfileModal from '../components/EditProfileModal';
 import { 
   LayoutDashboard, Package, ShieldCheck, PlusCircle, ExternalLink, 
-  MapPin, Calendar, Clock, CheckCircle, XCircle, AlertCircle, Inbox 
+  MapPin, Calendar, Clock, CheckCircle, XCircle, AlertCircle, Inbox,
+  Edit3, Phone, LogOut
 } from 'lucide-react';
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('POSTED'); // 'POSTED' or 'CLAIMS'
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   const [myItems, setMyItems] = useState([]);
   const [myClaims, setMyClaims] = useState([]);
@@ -65,9 +74,10 @@ const DashboardPage = () => {
               justifyContent: 'center',
               fontSize: '1.75rem',
               fontWeight: 800,
+              color: '#ffffff',
               boxShadow: '0 8px 20px var(--primary-glow)',
             }}>
-              {user?.email?.[0]?.toUpperCase() || 'U'}
+              {(user?.fullName || user?.email || 'U')[0].toUpperCase()}
             </div>
             <div>
               <h1 style={{ fontSize: '1.6rem', color: 'var(--text-main)', marginBottom: '0.25rem' }}>
@@ -75,14 +85,37 @@ const DashboardPage = () => {
               </h1>
               <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
                 {user?.email} • <span style={{ color: 'var(--primary)', fontWeight: 600 }}>Campus Member</span>
+                {user?.phoneNumber && (
+                  <span style={{ marginLeft: '0.5rem', color: 'var(--text-subtle)' }}>
+                    • 📞 {user.phoneNumber}
+                  </span>
+                )}
               </p>
             </div>
           </div>
 
-          <Link to="/post-item" className="btn btn-primary">
-            <PlusCircle size={18} />
-            Post New Item
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={() => setIsEditProfileOpen(true)}
+              className="btn btn-secondary"
+              style={{ padding: '0.55rem 1rem', fontSize: '0.85rem' }}
+            >
+              <Edit3 size={16} />
+              Edit Profile
+            </button>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="btn btn-danger"
+              style={{ padding: '0.55rem 1rem', fontSize: '0.85rem' }}
+              title="Log out of your account"
+            >
+              <LogOut size={16} />
+              Log Out
+            </button>
+          </div>
         </div>
 
         {/* Tab Navigation */}
@@ -164,7 +197,31 @@ const DashboardPage = () => {
           ) : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
               {myItems.map((item) => (
-                <div key={item.id} className="glass-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
+                <Link
+                  key={item.id}
+                  to={`/items/${item.id}`}
+                  className="glass-card"
+                  style={{
+                    padding: '1.5rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    cursor: 'pointer',
+                    transition: 'var(--transition)',
+                    border: '1px solid var(--border-subtle)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-4px)';
+                    e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+                    e.currentTarget.style.boxShadow = '0 12px 30px rgba(0, 0, 0, 0.45), 0 0 20px rgba(99, 102, 241, 0.15)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
+                    e.currentTarget.style.boxShadow = 'var(--shadow-card)';
+                  }}
+                >
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
                     <span className={item.type === 'LOST' ? 'badge badge-lost' : 'badge badge-found'}>
                       {item.type}
@@ -177,7 +234,7 @@ const DashboardPage = () => {
                     </span>
                   </div>
 
-                  <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem', color: 'var(--text-main)' }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem', color: 'var(--text-main)' }}>
                     {item.title}
                   </h3>
 
@@ -201,21 +258,21 @@ const DashboardPage = () => {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    fontSize: '0.825rem',
+                    color: 'var(--text-subtle)',
                   }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem', color: 'var(--text-subtle)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                       <MapPin size={14} color="var(--secondary)" />
-                      <span>{item.location}</span>
+                      <span style={{ maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {item.location}
+                      </span>
                     </div>
 
-                    <Link
-                      to={`/items/${item.id}`}
-                      className="btn btn-secondary"
-                      style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem' }}
-                    >
-                      Manage & Claims <ExternalLink size={13} />
-                    </Link>
+                    <span style={{ fontSize: '0.8rem', color: 'var(--primary)', fontWeight: 600 }}>
+                      View Details →
+                    </span>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           )
@@ -235,8 +292,9 @@ const DashboardPage = () => {
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
               {myClaims.map((claim) => (
-                <div
+                <Link
                   key={claim.id}
+                  to={`/items/${claim.itemId}`}
                   className="glass-panel"
                   style={{
                     padding: '1.5rem',
@@ -245,6 +303,18 @@ const DashboardPage = () => {
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     gap: '1.5rem',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    cursor: 'pointer',
+                    transition: 'var(--transition)',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-2px)';
+                    e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = 'var(--border-subtle)';
                   }}
                 >
                   <div style={{ flex: '1 1 300px' }}>
@@ -269,19 +339,21 @@ const DashboardPage = () => {
                     </p>
                   </div>
 
-                  <Link
-                    to={`/items/${claim.itemId}`}
-                    className="btn btn-secondary"
-                    style={{ fontSize: '0.85rem' }}
-                  >
-                    View Item Details <ExternalLink size={14} />
-                  </Link>
-                </div>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--primary)', fontWeight: 600 }}>
+                    View Item Details →
+                  </span>
+                </Link>
               ))}
             </div>
           )
         )}
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+      />
     </div>
   );
 };

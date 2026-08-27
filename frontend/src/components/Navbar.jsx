@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Search, PlusCircle, LayoutDashboard, LogOut, LogIn, UserPlus, Menu, X, Shield } from 'lucide-react';
+import { useAiModal } from '../context/AiModalContext';
+import { Search, PlusCircle, LayoutDashboard, LogOut, LogIn, UserPlus, Menu, X, Shield, Sparkles } from 'lucide-react';
 
 const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
+  const { openAiModal } = useAiModal();
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -60,94 +62,105 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <div style={{ display: 'none', alignItems: 'center', gap: '1.5rem' }} className="desktop-nav">
-          <Link
-            to="/"
+        {/* Desktop Navigation & Actions */}
+        <div style={{ display: 'none', alignItems: 'center', gap: '0.9rem' }} className="desktop-nav">
+          {/* SmartMatch AI Pill */}
+          <button
+            type="button"
+            onClick={openAiModal}
+            className="btn"
             style={{
-              fontWeight: 600,
-              fontSize: '0.925rem',
-              color: isActive('/') ? 'var(--primary)' : 'var(--text-muted)',
+              background: 'rgba(99, 102, 241, 0.12)',
+              border: '1px solid rgba(99, 102, 241, 0.3)',
+              color: '#a5b4fc',
+              padding: '0.45rem 0.95rem',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              borderRadius: 'var(--radius-full)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              cursor: 'pointer',
               transition: 'var(--transition)',
             }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)';
+              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.boxShadow = '0 0 16px rgba(99, 102, 241, 0.4)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'rgba(99, 102, 241, 0.12)';
+              e.currentTarget.style.color = '#a5b4fc';
+              e.currentTarget.style.boxShadow = 'none';
+            }}
           >
-            Explore Feed
-          </Link>
+            <Sparkles size={15} />
+            <span>SmartMatch AI</span>
+          </button>
 
-          {isAuthenticated && (
-            <Link
-              to="/dashboard"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.4rem',
-                fontWeight: 600,
-                fontSize: '0.925rem',
-                color: isActive('/dashboard') ? 'var(--primary)' : 'var(--text-muted)',
-                transition: 'var(--transition)',
-              }}
-            >
-              <LayoutDashboard size={17} />
-              My Dashboard
-            </Link>
-          )}
-        </div>
-
-        {/* Action CTAs */}
-        <div style={{ display: 'none', alignItems: 'center', gap: '1rem' }} className="desktop-nav">
-          <Link to="/post-item" className="btn btn-primary" style={{ padding: '0.55rem 1.15rem', fontSize: '0.875rem' }}>
-            <PlusCircle size={17} />
-            Post Item
+          {/* Post Item Primary CTA */}
+          <Link to="/post-item" className="btn btn-primary" style={{ padding: '0.5rem 1.1rem', fontSize: '0.85rem' }}>
+            <PlusCircle size={16} />
+            Report Item
           </Link>
 
           {isAuthenticated ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem',
-                background: 'rgba(255, 255, 255, 0.05)',
-                padding: '0.4rem 0.85rem',
-                borderRadius: 'var(--radius-full)',
-                border: '1px solid var(--border-subtle)',
-                fontSize: '0.85rem',
-                color: 'var(--text-main)',
-              }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginLeft: '0.25rem' }}>
+              {/* User Name Pill (Clicking navigates directly to Dashboard) */}
+              <Link
+                to="/dashboard"
+                title="Open My Dashboard"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.55rem',
+                  background: isActive('/dashboard') ? 'rgba(99, 102, 241, 0.22)' : 'rgba(255, 255, 255, 0.05)',
+                  border: isActive('/dashboard') ? '1px solid rgba(99, 102, 241, 0.55)' : '1px solid var(--border-subtle)',
+                  padding: '0.35rem 0.85rem 0.35rem 0.45rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.85rem',
+                  color: 'var(--text-main)',
+                  textDecoration: 'none',
+                  transition: 'var(--transition)',
+                  boxShadow: isActive('/dashboard') ? '0 0 14px rgba(99, 102, 241, 0.3)' : 'none',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'rgba(99, 102, 241, 0.18)';
+                  e.currentTarget.style.borderColor = 'rgba(99, 102, 241, 0.45)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = isActive('/dashboard') ? 'rgba(99, 102, 241, 0.22)' : 'rgba(255, 255, 255, 0.05)';
+                  e.currentTarget.style.borderColor = isActive('/dashboard') ? 'rgba(99, 102, 241, 0.55)' : 'var(--border-subtle)';
+                }}
+              >
                 <div style={{
-                  width: '24px',
-                  height: '24px',
+                  width: '26px',
+                  height: '26px',
                   borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%)',
+                  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontSize: '0.75rem',
-                  fontWeight: 700,
+                  fontWeight: 800,
+                  color: '#ffffff',
+                  boxShadow: '0 2px 8px rgba(99, 102, 241, 0.4)',
                 }}>
-                  {user?.email?.[0]?.toUpperCase() || 'U'}
+                  {(user?.fullName || user?.email || 'U')[0].toUpperCase()}
                 </div>
-                <span style={{ maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                  {user?.email}
+                <span style={{ fontWeight: 600, maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {user?.fullName || user?.email?.split('@')[0] || 'User'}
                 </span>
-              </div>
-
-              <button
-                onClick={handleLogout}
-                className="btn btn-ghost"
-                title="Log Out"
-                style={{ padding: '0.5rem', borderRadius: '50%' }}
-              >
-                <LogOut size={18} />
-              </button>
+              </Link>
             </div>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
-              <Link to="/login" className="btn btn-secondary" style={{ padding: '0.55rem 1rem', fontSize: '0.875rem' }}>
-                <LogIn size={16} />
+              <Link to="/login" className="btn btn-secondary" style={{ padding: '0.5rem 0.95rem', fontSize: '0.85rem' }}>
+                <LogIn size={15} />
                 Log In
               </Link>
-              <Link to="/register" className="btn btn-primary" style={{ padding: '0.55rem 1.15rem', fontSize: '0.875rem' }}>
-                <UserPlus size={16} />
+              <Link to="/register" className="btn btn-primary" style={{ padding: '0.5rem 1.1rem', fontSize: '0.85rem' }}>
+                <UserPlus size={15} />
                 Sign Up
               </Link>
             </div>
@@ -175,13 +188,30 @@ const Navbar = () => {
           flexDirection: 'column',
           gap: '1rem',
         }}>
-          <Link
-            to="/"
-            onClick={() => setMobileMenuOpen(false)}
-            style={{ fontWeight: 600, color: 'var(--text-main)' }}
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              openAiModal();
+            }}
+            className="btn"
+            style={{
+              width: '100%',
+              background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+              color: '#ffffff',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              padding: '0.65rem',
+              borderRadius: 'var(--radius-md)',
+            }}
           >
-            Explore Feed
-          </Link>
+            <Sparkles size={16} />
+            SmartMatch AI
+          </button>
+
           <Link
             to="/post-item"
             onClick={() => setMobileMenuOpen(false)}
@@ -189,7 +219,7 @@ const Navbar = () => {
             style={{ width: '100%' }}
           >
             <PlusCircle size={18} />
-            Post Item
+            Report Item
           </Link>
           {isAuthenticated ? (
             <>
@@ -208,7 +238,7 @@ const Navbar = () => {
                 style={{ width: '100%' }}
               >
                 <LogOut size={18} />
-                Log Out ({user?.email})
+                Log Out ({user?.fullName || user?.email})
               </button>
             </>
           ) : (

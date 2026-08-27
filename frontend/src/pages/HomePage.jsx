@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import axiosClient from '../api/axiosClient';
 import { API_ENDPOINTS, CATEGORIES, ITEM_TYPES } from '../api/apiEndpoints';
 import ItemCard from '../components/ItemCard';
-import { Search, PlusCircle, Filter, RotateCcw, ChevronLeft, ChevronRight, Inbox, Sparkles } from 'lucide-react';
+import { useAiModal } from '../context/AiModalContext';
+import { Search, PlusCircle, Filter, RotateCcw, ChevronLeft, ChevronRight, Inbox, Sparkles, Bot } from 'lucide-react';
 
 const HomePage = () => {
+  const { openAiModal } = useAiModal();
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -121,11 +123,13 @@ const HomePage = () => {
             A high-trust community connecting students and faculty to track, verify, and recover misplaced items across campus in real time.
           </p>
 
-          {/* Search Bar */}
+          {/* Search Bar & SmartMatch AI Action */}
           <div style={{
-            maxWidth: '680px',
+            maxWidth: '780px',
             margin: '0 auto',
-            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1rem',
           }}>
             <div style={{
               display: 'flex',
@@ -134,14 +138,14 @@ const HomePage = () => {
               backdropFilter: 'blur(16px)',
               border: '1px solid var(--border-subtle)',
               borderRadius: 'var(--radius-full)',
-              padding: '0.5rem 0.65rem 0.5rem 1.25rem',
+              padding: '0.45rem 0.55rem 0.45rem 1.25rem',
               boxShadow: '0 10px 30px rgba(0, 0, 0, 0.4)',
-              transition: 'var(--transition)',
+              gap: '0.75rem',
             }}>
-              <Search size={20} color="var(--primary)" style={{ flexShrink: 0, marginRight: '0.75rem' }} />
+              <Search size={20} color="var(--primary)" style={{ flexShrink: 0 }} />
               <input
                 type="text"
-                placeholder="Search by title or description (e.g. AirPods, Calculator, Blue Umbrella)..."
+                placeholder="Search keywords (e.g. AirPods, Calculator, Umbrella)..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 style={{
@@ -162,6 +166,63 @@ const HomePage = () => {
                   Clear
                 </button>
               )}
+
+              {/* Glowing SmartMatch AI Button */}
+              <button
+                type="button"
+                onClick={openAiModal}
+                className="btn"
+                style={{
+                  background: 'linear-gradient(135deg, #6366f1 0%, #06b6d4 100%)',
+                  color: '#ffffff',
+                  padding: '0.6rem 1.2rem',
+                  borderRadius: 'var(--radius-full)',
+                  fontSize: '0.85rem',
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                  boxShadow: '0 0 18px rgba(99, 102, 241, 0.45)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.45rem',
+                  border: 'none',
+                  cursor: 'pointer',
+                  transition: 'var(--transition)',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
+                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
+              >
+                <Sparkles size={15} />
+                <span>SmartMatch AI</span>
+              </button>
+            </div>
+
+            {/* Sub-helper hint */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+              fontSize: '0.825rem',
+              color: 'var(--text-muted)',
+              flexWrap: 'wrap',
+            }}>
+              <span>💡 Looking for something specific?</span>
+              <button
+                type="button"
+                onClick={openAiModal}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#a5b4fc',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  fontSize: '0.825rem',
+                  padding: 0,
+                }}
+              >
+                Describe it in plain English & let AI match it ✨
+              </button>
             </div>
           </div>
         </div>

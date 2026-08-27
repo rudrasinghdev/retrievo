@@ -1,5 +1,6 @@
 package com.rudra.retrievo.controller;
 
+import com.rudra.retrievo.dto.ItemMatchResponseDto;
 import com.rudra.retrievo.dto.ItemRequestDto;
 import com.rudra.retrievo.dto.ItemResponseDto;
 import com.rudra.retrievo.entity.User;
@@ -17,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/items")
@@ -78,5 +81,14 @@ public class ItemController {
     ) {
         itemService.deleteItem(id, currentUser);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/match")
+    public ResponseEntity<List<ItemMatchResponseDto>> matchItems(
+            @RequestParam("query") String query,
+            @RequestParam(value = "type", required = false) ItemType type
+    ) {
+        List<ItemMatchResponseDto> matches = itemService.matchItems(query, type);
+        return ResponseEntity.ok(matches);
     }
 }

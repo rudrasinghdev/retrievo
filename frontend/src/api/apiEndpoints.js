@@ -2,11 +2,14 @@ export const API_ENDPOINTS = {
   // Auth
   REGISTER: '/api/auth/register',
   LOGIN: '/api/auth/login',
+  ME: '/api/auth/me',
+  UPDATE_PROFILE: '/api/auth/profile',
 
   // Items
   ITEMS: '/api/items',
   ITEM_BY_ID: (id) => `/api/items/${id}`,
   MY_ITEMS: '/api/items/me',
+  MATCH_ITEMS: '/api/items/match',
 
   // Claims
   SUBMIT_CLAIM: (itemId) => `/api/items/${itemId}/claims`,

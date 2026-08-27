@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { AiModalProvider } from './context/AiModalContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -16,8 +17,9 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <Navbar />
+        <AiModalProvider>
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <Navbar />
           <main style={{ flexGrow: 1 }}>
             <Routes>
               {/* Public Routes */}
@@ -59,9 +61,10 @@ function App() {
           </main>
           <Footer />
         </div>
+        </AiModalProvider>
       </Router>
     </AuthProvider>
   );
-}
+};
 
 export default App;
