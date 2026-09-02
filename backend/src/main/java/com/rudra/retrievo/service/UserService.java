@@ -1,7 +1,7 @@
 package com.rudra.retrievo.service;
 
-import com.rudra.retrievo.dto.UserProfileUpdateDto;
 import com.rudra.retrievo.dto.UserLoginDto;
+import com.rudra.retrievo.dto.UserProfileUpdateDto;
 import com.rudra.retrievo.dto.UserRegistrationDto;
 import com.rudra.retrievo.entity.User;
 import com.rudra.retrievo.exception.EmailAlreadyExistsException;
@@ -43,6 +43,7 @@ public class UserService {
                 new UsernamePasswordAuthenticationToken(loginDto.getEmail(), loginDto.getPassword())
         );
         User user = (User) authentication.getPrincipal();
+        assert user != null;
         return jwtService.generateToken(user);
     }
 
@@ -51,12 +52,11 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found with email: " + email));
     }
 
-    public User updateUserProfile(String email, UserProfileUpdateDto updateDto) {
-        User user = getUserByEmail(email);
-        user.setFullName(updateDto.getFullName().trim());
+    public User updateUserProfile(User currentUser, UserProfileUpdateDto updateDto) {
+        currentUser.setFullName(updateDto.getFullName().trim());
         if (updateDto.getPhoneNumber() != null) {
-            user.setPhoneNumber(updateDto.getPhoneNumber().trim());
+            currentUser.setPhoneNumber(updateDto.getPhoneNumber().trim());
         }
-        return userRepository.save(user);
+        return userRepository.save(currentUser);
     }
 }

@@ -49,7 +49,6 @@ public class VectorMatchingService {
                 ))
                 .build();
         vectorStore.add(List.of(doc));
-        log.info("Indexed item #{} (UUID: {}) into pgvector store", item.getId(), docId);
     }
 
     public List<ItemMatchResponseDto> findMatches(String query, ItemType targetType, double minScore) {
@@ -88,7 +87,6 @@ public class VectorMatchingService {
     public void deleteItemIndex(Long itemId) {
         UUID docId = UUID.nameUUIDFromBytes(("retrievo-item-" + itemId).getBytes());
         vectorStore.delete(List.of(docId.toString()));
-        log.info("Removed item #{} (UUID: {}) from pgvector store", itemId, docId);
     }
 
 }

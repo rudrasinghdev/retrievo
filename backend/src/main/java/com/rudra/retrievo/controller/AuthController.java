@@ -1,7 +1,7 @@
 package com.rudra.retrievo.controller;
 
-import com.rudra.retrievo.dto.UserProfileUpdateDto;
 import com.rudra.retrievo.dto.UserLoginDto;
+import com.rudra.retrievo.dto.UserProfileUpdateDto;
 import com.rudra.retrievo.dto.UserRegistrationDto;
 import com.rudra.retrievo.dto.UserResponseDto;
 import com.rudra.retrievo.entity.User;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -58,13 +59,14 @@ public class AuthController {
 
     @PutMapping("/profile")
     public ResponseEntity<UserResponseDto> updateProfile(
+            @AuthenticationPrincipal User currentUser,
             Authentication authentication,
             @Valid @RequestBody UserProfileUpdateDto updateDto
     ) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-        User updatedUser = userService.updateUserProfile(authentication.getName(), updateDto);
+        User updatedUser = userService.updateUserProfile(currentUser, updateDto);
         return ResponseEntity.ok(UserResponseDto.fromEntity(updatedUser));
     }
 }

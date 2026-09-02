@@ -1,5 +1,6 @@
 package com.rudra.retrievo.config;
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.embedding.Embedding;
 import org.springframework.ai.embedding.EmbeddingModel;
@@ -31,7 +32,7 @@ public class AiConfig {
                 .build();
         return new EmbeddingModel() {
             @Override
-            public EmbeddingResponse call(EmbeddingRequest request) {
+            public @NonNull EmbeddingResponse call(@NonNull EmbeddingRequest request) {
                 List<String> instructions = request.getInstructions();
                 List<Embedding> embeddings = new ArrayList<>();
                 for (int i = 0; i < instructions.size(); i++) {
@@ -62,7 +63,8 @@ public class AiConfig {
             }
 
             @Override
-            public float[] embed(Document document) {
+            public float @NonNull [] embed(@NonNull Document document) {
+                assert document.getText() != null;
                 return embed(document.getText());
             }
 

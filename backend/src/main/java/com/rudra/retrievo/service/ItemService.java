@@ -137,7 +137,6 @@ public class ItemService {
 
     @Transactional(readOnly = true)
     public List<ItemMatchResponseDto> matchItems(String query, ItemType type) {
-        // If user is searching what they LOST, search among FOUND items (and vice versa)
         ItemType targetType = (type == ItemType.LOST) ? ItemType.FOUND :
                 (type == ItemType.FOUND ? ItemType.LOST : null);
         return vectorMatchingService.findMatches(query, targetType, 0.65);
