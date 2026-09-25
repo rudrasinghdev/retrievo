@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(customAuthEntryPoint()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**", "/error").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/items", "/api/items/{id:[0-9]+}", "/api/items/match").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/items", "/api/items/{id:[0-9]+}", "/api/items/match", "/api/health/live").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
